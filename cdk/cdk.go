@@ -41,7 +41,7 @@ func NewCFDistributionStack(scope constructs.Construct, id string, props *CdkSta
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
 	// Cert from ARN as parameter
-	createdArn := jsii.String(fmt.Sprintf("arn:aws:acm:us-east-1:%s:certificate/%s", sprops.Env.Account, certUuid))
+	createdArn := jsii.String(fmt.Sprintf("arn:aws:acm:us-east-1:%s:certificate/%s", *sprops.Env.Account, certUuid))
 	certificate := awscertificatemanager.Certificate_FromCertificateArn(stack, wrapName("certificate"), createdArn)
 
 	// S3 bucket for storing static website
@@ -87,7 +87,7 @@ func NewCFDistributionStack(scope constructs.Construct, id string, props *CdkSta
 func main() {
 	app := awscdk.NewApp(nil)
 
-	NewCFDistributionStack(app, "CdkStack", &CdkStackProps{
+	NewCFDistributionStack(app, "PlaceholderSiteStack", &CdkStackProps{
 		awscdk.StackProps{
 			Env: env(),
 			Tags: &map[string]*string{
