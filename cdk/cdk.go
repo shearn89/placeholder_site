@@ -64,6 +64,7 @@ func NewCFDistributionStack(scope constructs.Construct, id string, props *CdkSta
 			Origin: awscloudfrontorigins.NewS3Origin(hostingBucket, &awscloudfrontorigins.S3OriginProps{
 				OriginAccessIdentity: oai,
 			}),
+			ViewerProtocolPolicy: awscloudfront.ViewerProtocolPolicy_REDIRECT_TO_HTTPS,
 		},
 		Certificate:       certificate,
 		Comment:           jsii.String("CDN for the placeholder site"),
