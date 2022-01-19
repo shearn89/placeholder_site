@@ -26,7 +26,8 @@ var (
 	// UUID for certificate, last part of ARN
 	certUuid = "5b441288-e615-492b-bd49-ae87981cb4a0"
 	// Name for the bucket/zone/apex record
-	siteName = jsii.String("ajshearn.com")
+	siteName    = jsii.String("ajshearn.com")
+	domainNames = jsii.Strings("ajshearn.com", "www.ajshearn.com")
 )
 
 func wrapName(extension string) *string {
@@ -69,7 +70,7 @@ func NewCFDistributionStack(scope constructs.Construct, id string, props *CdkSta
 		Certificate:       certificate,
 		Comment:           jsii.String("CDN for the placeholder site"),
 		DefaultRootObject: jsii.String("index.html"),
-		DomainNames:       jsii.Strings("ajshearn.com", "www.ajshearn.com"),
+		DomainNames:       domainNames,
 	})
 	// wrap as a target for the r53 record
 	target := awsroute53targets.NewCloudFrontTarget(distribution)
@@ -78,11 +79,13 @@ func NewCFDistributionStack(scope constructs.Construct, id string, props *CdkSta
 	zone := awsroute53.HostedZone_FromLookup(stack, wrapName("hostedZone"), &awsroute53.HostedZoneProviderProps{
 		DomainName: siteName,
 	})
-	awsroute53.NewARecord(stack, wrapName("dnsRecord"), &awsroute53.ARecordProps{
-		Zone:       zone,
-		RecordName: siteName,
-		Target:     awsroute53.RecordTarget_FromAlias(target),
-	})
+	for i, domain := range *domainNames {
+		awsroute53.NewARecord(stack, wrapName(fmt.Sprintf("%s-%d", *domain, i)), &awsroute53.ARecordProps{
+			Zone:       zone,
+			RecordName: domain,
+			Target:     awsroute53.RecordTarget_FromAlias(target),
+		})
+	}
 
 	return stack
 }
