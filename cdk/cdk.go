@@ -50,6 +50,8 @@ func NewCFDistributionStack(scope constructs.Construct, id string, props *CdkSta
 		BucketName:        siteName,
 		Encryption:        awss3.BucketEncryption_S3_MANAGED,
 	})
+	// won't need the bucket without the distribution
+	hostingBucket.ApplyRemovalPolicy(awscdk.RemovalPolicy_DESTROY)
 
 	// OAI for cloudfront distribution
 	oai := awscloudfront.NewOriginAccessIdentity(stack, wrapName("oai"), &awscloudfront.OriginAccessIdentityProps{
